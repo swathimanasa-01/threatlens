@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block content %}
+<div class="card shadow-sm mb-4"><div class="card-body">
+<h4>Investigate an Indicator of Compromise</h4>
+<p class="text-muted">IP address, domain, URL, MD5 / SHA-1 / SHA-256. Defanged input (hxxp, [.]) is accepted.</p>
+<form method="post" class="row g-2">
+<div class="col-md-10"><input name="ioc" class="form-control" maxlength="2048" placeholder="e.g. 8.8.8.8 or example.com" required></div>
+<div class="col-md-2 d-grid"><button class="btn btn-primary">Analyse</button></div>
+</form></div></div>
+{% if result %}
+{% set colors = {'High':'danger','Medium':'warning','Low':'success','Unknown':'secondary','Not assessed':'secondary'} %}
+<div class="card shadow-sm"><div class="card-body">
+<h5>Result</h5>
+<table class="table table-sm">
+<tr><th style="width:180px">Indicator</th><td><code>{{ result.display }}</code></td></tr>
+<tr><th>Detected type</th><td>{{ result.type|upper }}</td></tr>
+<tr><th>Lookup status</th><td>{{ result.status }}</td></tr>
+<tr><th>Risk level</th><td><span class="badge text-bg-{{ colors[result.risk] }} fs-6">{{ result.risk }}</span></td></tr>
+<tr><th>Explanation</th><td>{{ result.explanation }}</td></tr>
+</table>
+{% if result.stats %}<h6>Engine verdicts</h6>
+<ul class="list-inline">{% for k,v in result.stats.items() %}
+<li class="list-inline-item badge text-bg-light border">{{ k }}: {{ v }}</li>{% endfor %}</ul>{% endif %}
+{% if result.details %}<h6>Additional details</h6>
+<table class="table table-sm">{% for k,v in result.details.items() %}
+<tr><th style="width:180px">{{ k }}</th><td>{{ v }}</td></tr>{% endfor %}</table>{% endif %}
+</div></div>
+{% endif %}{% endblock %}
